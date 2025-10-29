@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -13,8 +14,15 @@ namespace Warehouse.Character
         [SerializeField] private float playerRotationSpeed = 10.0f;
         [SerializeField] private Vector3 playerVelocity;
         [FormerlySerializedAs("moveInput")] [SerializeField] private Vector3 moveDir;
+        [Header("Dash")] 
+        [SerializeField] private float dashSpeed = 12.0f;
+        [SerializeField] private float dashTime = 0.5f;
+        [SerializeField] private float dashCooldown = 0.1f;
+        [SerializeField] [Range(0.1f, 2.0f)] private float verticalVelocityDashScale = 0.5f;
+        [SerializeField] private bool isDashing;
+        [SerializeField] private bool canDash = true;
         [Header("Jump")]
-        [SerializeField] private bool isJumping = true;
+        [SerializeField] private bool isJumping;
         [SerializeField] private float jumpHeight = 5f;
         [SerializeField] private float gravityValue = -9.81f;
 
@@ -72,6 +80,54 @@ namespace Warehouse.Character
             moveDir = Vector3.ClampMagnitude(moveDirection, 1f);
         }
 
+        private async UniTask DashAsync()
+        {
+            // Если сделал деш то ставим стейт деша и убираем возможность дешится
+            // пока кулдаун на деш пройдет
+            if (isDashing || !canDash)
+            {
+                return;
+            }
+            isDashing = true;
+            canDash = false;
+            playerVelocity.y = 0;
+
+            var startTime = Time.time;
+
+            // Проведение деша
+            await UniTask.WaitUntil(() =>
+            {
+                var elapsed = Time.time - startTime;
+                var durationReached = elapsed >= dashTime;
+                return durationReached;
+            });
+
+            isDashing = false;
+
+            // Кулдаун
+            await UniTask.Delay(System.TimeSpan.FromSeconds(dashCooldown));
+            canDash = true;
+        }
+        
+        public void OnDashStarted()
+        {
+            DashAsync().Forget();
+        }
+        
+        private void UpdateCharacterMovement()
+        {
+            Vector3 finalMove;
+            if (isDashing)
+            {
+                finalMove = moveDir * dashSpeed + playerVelocity.y * verticalVelocityDashScale * Vector3.up;
+            }
+            else
+            {
+                finalMove = moveDir * playerSpeed + playerVelocity.y * Vector3.up;    
+            }
+            charController.Move(finalMove * Time.deltaTime);
+        }
+        
         private void UpdateCharacterRotation()
         {
             if (moveDir.sqrMagnitude < 0.01f) {
@@ -90,7 +146,7 @@ namespace Warehouse.Character
         private void Update()
         {
             // Apply gravity
-            if (!charController.isGrounded) {
+            if (!charController.isGrounded && !isDashing) {
                 playerVelocity.y += gravityValue * Time.deltaTime;
             }
         
@@ -98,8 +154,7 @@ namespace Warehouse.Character
             UpdateCharacterRotation();
             
             // Combine jump + move
-            var finalMove = moveDir * playerSpeed + playerVelocity.y * Vector3.up;
-            charController.Move(finalMove * Time.deltaTime);
+            UpdateCharacterMovement();
         }
         
         public void FixedUpdate()

@@ -27,11 +27,16 @@ public class CharacterActionsHandler : MonoBehaviour
     {
         _inputReader.Enable();
         // Player actions
+        // Move
         _inputReader.OnMove += HandleMove;
+        // Attack
         _inputReader.OnAttackPressed += HandleAttackStart;
         _inputReader.OnAttackReleased += HandleAttackStop;
+        // Jump
         _inputReader.OnJumpPressed += HandleJumpStart;
         _inputReader.OnJumpReleased += HandleJumpStop;
+        // Dash
+        _inputReader.OnDashPressed += HandleDashStart;
 
         // Camera notifier related actions
         _cameraMoveNotifier.PositionChanged += HandleCameraPositionChanged;
@@ -44,11 +49,16 @@ public class CharacterActionsHandler : MonoBehaviour
     {
         _inputReader.Disable();
         // Player actions
+        // Move
         _inputReader.OnMove -= HandleMove;
+        // Attack
         _inputReader.OnAttackPressed -= HandleAttackStart;
         _inputReader.OnAttackReleased -= HandleAttackStop;
+        // Jump
         _inputReader.OnJumpPressed -= HandleJumpStart;
         _inputReader.OnJumpReleased -= HandleJumpStop;
+        // Dash
+        _inputReader.OnDashPressed -= HandleDashStart;        
 
         // Camera notifier related actions
         _cameraMoveNotifier.PositionChanged -= HandleCameraPositionChanged;
@@ -72,6 +82,11 @@ public class CharacterActionsHandler : MonoBehaviour
         movementController.Move(dir);
     }
 
+    private void HandleDashStart()
+    {
+        movementController.OnDashStarted();    
+    }
+    
     private void HandleAttackStart()
     {
         attackController.StartAttack();

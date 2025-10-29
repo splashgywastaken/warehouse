@@ -1127,14 +1127,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 6362759840863453067, guid: e3c9647d8d7983b4795b6782adc46e06, type: 3}
-      propertyPath: isJumping
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6362759840863453067, guid: e3c9647d8d7983b4795b6782adc46e06, type: 3}
-      propertyPath: jumpHeight
-      value: 5
-      objectReference: {fileID: 0}
     - target: {fileID: 7455839936573391322, guid: e3c9647d8d7983b4795b6782adc46e06, type: 3}
       propertyPath: m_Name
       value: Knight

@@ -9,6 +9,7 @@ namespace Warehouse.Input {
         public event Action<Vector2> OnMove;
         public event Action OnJumpPressed;
         public event Action OnJumpReleased;
+        public event Action OnDashPressed;
         public event Action OnAttackPressed;
         public event Action OnAttackReleased;
 
@@ -27,6 +28,8 @@ namespace Warehouse.Input {
             // Jump
             _controls.Player.Jump.started += ctx => OnJumpPressed?.Invoke();
             _controls.Player.Jump.canceled += ctx => OnJumpReleased?.Invoke();
+            // Dash
+            _controls.Player.Dash.performed += ctx => OnDashPressed?.Invoke();
             // Attack
             _controls.Player.Attack.started += ctx => OnAttackPressed?.Invoke();
             _controls.Player.Attack.canceled += ctx => OnAttackReleased?.Invoke();

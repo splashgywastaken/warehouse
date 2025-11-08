@@ -1,0 +1,17 @@
+{
+    "name": "Warehouse.Services",
+    "rootNamespace": "Warehouse.Services",
+    "references": [
+        "GUID:be8fe1bc5e359d54295e51ca52ce8a73",
+        "GUID:4307f53044263cf4b835bd812fc161a4"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

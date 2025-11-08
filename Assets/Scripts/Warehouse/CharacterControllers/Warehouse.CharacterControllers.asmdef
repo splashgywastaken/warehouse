@@ -1,0 +1,21 @@
+{
+    "name": "Warehouse.Character",
+    "rootNamespace": "Warehouse.CharacterControllers",
+    "references": [
+        "GUID:be8fe1bc5e359d54295e51ca52ce8a73",
+        "GUID:585ddb6ddfa55c94e8126e09314e2e26",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:17133d231f8065d4eaa28ca1d6c2e7c8",
+        "GUID:2c3f910e4ad1b0042927f6cefe28131b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

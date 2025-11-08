@@ -1,0 +1,21 @@
+{
+    "name": "Warehouse.Injection",
+    "rootNamespace": "Warehouse.Injection",
+    "references": [
+        "Warehouse.Character",
+        "Zenject",
+        "Warehouse.Input",
+        "Warehouse.Models.Stats",
+        "Warehouse.UI",
+        "Warehouse.Services"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

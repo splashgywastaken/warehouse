@@ -1,0 +1,20 @@
+{
+    "name": "Warehouse.UI",
+    "rootNamespace": "Warehouse.UI",
+    "references": [
+        "GUID:585ddb6ddfa55c94e8126e09314e2e26",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:2c3f910e4ad1b0042927f6cefe28131b",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:ab65e3459c4ff7847afc783a4addd8da"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

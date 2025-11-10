@@ -5,7 +5,7 @@ using Zenject;
 
 namespace Warehouse.Character
 {
-    public class MovementController : IMoveController
+    public class MovementController : IMovementController
     {
         // Camera values
         private Quaternion _cameraRotation;
@@ -188,7 +188,7 @@ namespace Warehouse.Character
             UpdateCharacterMovement();
         }
         
-        public void TickFixed()
+        public void FixedTick()
         {
             if (_charController.isGrounded && _jumpStats.IsJumping)
             {

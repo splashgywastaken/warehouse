@@ -6,5 +6,7 @@ namespace Warehouse.Character
     {
         void StartAttack();
         void StopAttack();
+        void Tick();
+        void FixedTick();
     }
 }

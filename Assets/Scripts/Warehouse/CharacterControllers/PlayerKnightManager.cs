@@ -1,32 +1,39 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using Warehouse.Character.PlayerSignals;
 using Warehouse.CharacterControllers;
 using Warehouse.Services.Camera;
 using Zenject;
 
 namespace Warehouse.Character
 {
+    namespace PlayerSignals {
+        public class PlayerEnabledSignal { }
+        public class PlayerDisabledSignal { }
+    }
+    
     /// <summary>
     /// Manages all the controllers that controls player actions
     /// </summary>
     public class PlayerKnightManager : MonoBehaviour
     {
         // Controllers
-        [SerializeField] private AttackController attackController;
-        [SerializeField] private StaminaController staminaController; 
-        
-        // Injectables
-        // Controllers
+        [Inject] 
+        private IStaminaController _staminaController;
         [Inject]
-        private IMoveController _movementController;
+        private IAttackController _attackController;
+        [Inject]
+        private IMovementController _movementController;
         // Input
         [Inject]
         private IInputReader _inputReader;
-        
         // Notifiers
         [Inject]
         private ICameraNotifier _cameraMoveNotifier;
+        // Signals
+        [Inject]
+        private SignalBus _signalBus;
         
         // Private fields
         // Misc
@@ -41,15 +48,19 @@ namespace Warehouse.Character
         private void Update()
         {
             _movementController.Tick();
+            _attackController.Tick();
         }
 
         private void FixedUpdate()
         {
-            _movementController.TickFixed();
+            _movementController.FixedTick();
+            _attackController.FixedTick();
         }
         
         private void OnEnable()
         {
+            _signalBus.Fire<PlayerEnabledSignal>();
+            
             SubscribeInputReaderEvents();
             SubscribeControllersEvents();
             SubscribeCameraEvents();
@@ -94,6 +105,8 @@ namespace Warehouse.Character
         
         private void OnDisable()
         {
+            _signalBus.Fire<PlayerDisabledSignal>();
+            
             UnsubscribeInputReaderEvents();
             UnsubscribeControllersEvents();
             UnsubscribeCameraEvents();
@@ -145,17 +158,17 @@ namespace Warehouse.Character
 
         private void HandlePlayerDashed(PlayerStaminaStats.StaminaActions action)
         {
-            staminaController.ConsumeStamina(action);
+            _staminaController.ConsumeStamina(action);
         }
         
         private void HandleAttackStart()
         {
-            attackController.StartAttack();
+            _attackController.StartAttack();
         }
 
         private void HandleAttackStop()
         {
-            attackController.StopAttack();
+            _attackController.StopAttack();
         }
 
         private void HandleJumpStart()
@@ -165,7 +178,7 @@ namespace Warehouse.Character
 
         private void HandlePlayerJumped(PlayerStaminaStats.StaminaActions action)
         {
-            staminaController.ConsumeStamina(action);
+            _staminaController.ConsumeStamina(action);
         }
         
         private void HandleJumpStop()

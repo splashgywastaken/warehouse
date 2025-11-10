@@ -3,40 +3,53 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UniRx;
 using UnityEngine;
+using Warehouse.Character.PlayerSignals;
 using Zenject;
 
 namespace Warehouse.CharacterControllers
 {
-    public class StaminaController : MonoBehaviour, IStaminaController
+    public class StaminaController : IStaminaController
     {
-        // Stats
-        [SerializeField, Inject] 
-        private PlayerStaminaStats staminaStats;
+        // Stats 
+        private readonly PlayerStaminaStats _staminaStats;
         // Hidden values
         private bool _staminaRecharging;
         private CancellationTokenSource _staminaRechargeCts;
         private CompositeDisposable _disposables;
+        private readonly SignalBus _signalBus;
 
-        private void Awake()
+        [Inject]
+        private StaminaController(PlayerStaminaStats staminaStats, SignalBus signalBus)
         {
+            _staminaStats = staminaStats;
+            _signalBus = signalBus;
             _disposables = new CompositeDisposable();
         }
         
-        private void OnEnable()
+        public void Initialize()
         {
-            staminaStats.maxStaminaRx
-                .Where(currentMaxStamina => currentMaxStamina > staminaStats.Stamina)
-                .Subscribe(_ => RechargeStamina())
-                .AddTo(_disposables);
+            _signalBus.Subscribe<PlayerEnabledSignal>(OnEnable);
+            _signalBus.Subscribe<PlayerDisabledSignal>(OnDisable);
         }
 
-        private void OnDisable()
+        public void OnEnable()
+        {
+            _disposables = new CompositeDisposable();
+            _staminaStats.maxStaminaRx
+                .Where(currentMaxStamina => currentMaxStamina > _staminaStats.Stamina)
+                .Subscribe(_ => RechargeStamina())
+                .AddTo(_disposables);   
+        }
+
+        public void OnDisable()
         {
             _disposables.Dispose();
         }
 
-        private void OnDestroy()
+        public void Dispose()
         {
+            _signalBus.TryUnsubscribe<PlayerEnabledSignal>(OnEnable);
+            _signalBus.TryUnsubscribe<PlayerDisabledSignal>(OnDisable);
             _staminaRechargeCts?.Cancel();
             _staminaRechargeCts?.Dispose();
             _disposables.Dispose();
@@ -44,7 +57,7 @@ namespace Warehouse.CharacterControllers
         
         public void ConsumeStamina(PlayerStaminaStats.StaminaActions action)
         {
-            staminaStats.SpendStamina(action);
+            _staminaStats.SpendStamina(action);
             RechargeStamina();
         }
 
@@ -52,7 +65,7 @@ namespace Warehouse.CharacterControllers
         {
             if (_staminaRecharging)
             {
-                Debug.Log("<color=orange>[Stamina]</color> Таска уже идёт – отменяем текущую...");
+                // Debug.Log("<color=orange>[Stamina]</color> Таска уже идёт – отменяем текущую...");
                 _staminaRechargeCts?.Cancel();
                 _staminaRechargeCts?.Dispose();
                 _staminaRechargeCts = null;
@@ -63,7 +76,7 @@ namespace Warehouse.CharacterControllers
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate);
 
                 _staminaRechargeCts = new CancellationTokenSource();
-                Debug.Log("<color=yellow>[Stamina]</color> Запускаем новую таску восстановления...");
+                // Debug.Log("<color=yellow>[Stamina]</color> Запускаем новую таску восстановления...");
                 RechargeStaminaAsync(_staminaRechargeCts.Token).Forget();
             });
             
@@ -77,28 +90,28 @@ namespace Warehouse.CharacterControllers
             
             try
             {
-                Debug.Log("<color=white>[Stamina]</color> Ожидание перед восстановлением...");
+                // Debug.Log("<color=white>[Stamina]</color> Ожидание перед восстановлением...");
                 // Wait until delay
-                await UniTask.Delay(TimeSpan.FromSeconds(staminaStats.delayBeforeRecharge), cancellationToken: token);
-                Debug.Log("<color=green>[Stamina]</color> Начинаем восстанавливать стамину...");
+                await UniTask.Delay(TimeSpan.FromSeconds(_staminaStats.delayBeforeRecharge), cancellationToken: token);
+                // Debug.Log("<color=green>[Stamina]</color> Начинаем восстанавливать стамину...");
 
                 // Recharge stamina
-                while (!staminaStats.RechargeStamina())
+                while (!_staminaStats.RechargeStamina())
                 {
-                    Debug.Log($"<color=cyan>[Stamina]</color> Текущее значение: {staminaStats.Stamina}");
+                    // Debug.Log($"<color=cyan>[Stamina]</color> Текущее значение: {_staminaStats.Stamina}");
                     await UniTask.Yield(PlayerLoopTiming.FixedUpdate, token);
                 }
                 
-                Debug.Log("<color=lime>[Stamina]</color> Стамина полностью восстановлена!");
+                // Debug.Log("<color=lime>[Stamina]</color> Стамина полностью восстановлена!");
             }
             catch (OperationCanceledException)
             {
-                Debug.Log("<color=red>[Stamina]</color> Таска отменена.");
+                // Debug.Log("<color=red>[Stamina]</color> Таска отменена.");
             }
             finally
             {
                 _staminaRecharging = false;   
-                Debug.Log("<color=white>[Stamina]</color> Процесс восстановления завершён.");
+                // Debug.Log("<color=white>[Stamina]</color> Процесс восстановления завершён.");
             }
         }
     }

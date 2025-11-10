@@ -1,7 +1,7 @@
 using UnityEngine;
 using Warehouse.Character;
 
-public class AttackController : MonoBehaviour, IAttackController 
+public class AttackController : IAttackController 
 {
     public void StartAttack()
     {
@@ -13,7 +13,12 @@ public class AttackController : MonoBehaviour, IAttackController
         // Debug.Log("Attack ended");
     }
 
-    public void FixedUpdate()
+    public void Tick()
+    {
+        
+    }
+    
+    public void FixedTick()
     {
         
     }

@@ -1,6 +1,4 @@
 using UnityEngine;
-using Warehouse.Character;
-using Warehouse.Input;
 using Warehouse.Services.Camera;
 using Warehouse.UI;
 using Zenject;

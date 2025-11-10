@@ -20,7 +20,7 @@ MonoBehaviour:
   baseStaminaRecharge: 0.25
   delayBeforeRecharge: 0.5
   staminaRx:
-    value: 150
+    value: 138.75
   maxStaminaRx:
     value: 150
   staminaCapRx:

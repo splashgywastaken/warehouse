@@ -1,9 +1,10 @@
 using System;
 using UnityEngine;
+using Zenject;
 
 namespace Warehouse.Character
 {
-    public interface IMoveController
+    public interface IMovementController : ITickable, IFixedTickable
     {
         /// <summary>
         /// Carries amount of stamina wasted on dash
@@ -20,8 +21,5 @@ namespace Warehouse.Character
         void OnCameraRotated(Quaternion rot);
         void OnDashStarted();
         void Move(Vector2 input);
-
-        void TickFixed();
-        void Tick();
     }
 }

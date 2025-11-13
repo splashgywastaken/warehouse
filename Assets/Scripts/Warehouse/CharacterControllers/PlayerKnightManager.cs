@@ -1,6 +1,9 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Warehouse.Character.PlayerSignals;
 using Warehouse.CharacterControllers;
 using Warehouse.Services.Camera;
@@ -19,8 +22,6 @@ namespace Warehouse.Character
     public class PlayerKnightManager : MonoBehaviour
     {
         // Controllers
-        [Inject] 
-        private IStaminaController _staminaController;
         [Inject]
         private IAttackController _attackController;
         [Inject]
@@ -38,7 +39,7 @@ namespace Warehouse.Character
         // Private fields
         // Misc
         private CancellationTokenSource _cts;
-
+        
         private void Awake()
         {
             _cameraMoveNotifier = FindAnyObjectByType<CinemachineCameraMoveNotifier>();
@@ -93,14 +94,10 @@ namespace Warehouse.Character
 
         private void SubscribeControllersEvents()
         {
-            _movementController.PlayerJumped += HandlePlayerJumped;
-            _movementController.PlayerDashed += HandlePlayerDashed;
         }
         
         private void UnsubscribeControllersEvents()
         {
-            _movementController.PlayerJumped -= HandlePlayerJumped;
-            _movementController.PlayerDashed -= HandlePlayerDashed;
         }
         
         private void OnDisable()
@@ -156,11 +153,6 @@ namespace Warehouse.Character
             _movementController.OnDashStarted();    
         }
 
-        private void HandlePlayerDashed(PlayerStaminaStats.StaminaActions action)
-        {
-            _staminaController.ConsumeStamina(action);
-        }
-        
         private void HandleAttackStart()
         {
             _attackController.StartAttack();
@@ -174,11 +166,6 @@ namespace Warehouse.Character
         private void HandleJumpStart()
         {
             _movementController.StartJump();   
-        }
-
-        private void HandlePlayerJumped(PlayerStaminaStats.StaminaActions action)
-        {
-            _staminaController.ConsumeStamina(action);
         }
         
         private void HandleJumpStop()

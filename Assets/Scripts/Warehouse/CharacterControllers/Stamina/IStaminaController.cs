@@ -5,8 +5,8 @@ namespace Warehouse.CharacterControllers
 {
     public interface IStaminaController : IInitializable, IDisposable
     {
-        public void ConsumeStamina(PlayerStaminaStats.StaminaActions action);
-        public void OnEnable();
-        public void OnDisable();
+        public bool ConsumeStamina(PlayerStaminaStats.StaminaActions action);
+        public void Enable();
+        public void Disable();
     }
 }

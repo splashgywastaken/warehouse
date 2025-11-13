@@ -15,18 +15,18 @@ MonoBehaviour:
   baseStamina: 120
   baseMaxStamina: 120
   baseStaminaCap: 150
-  baseStaminaJumpCost: 10
+  baseStaminaJumpCost: 25
   baseStaminaDashCost: 50
   baseStaminaRecharge: 0.25
   delayBeforeRecharge: 0.5
   staminaRx:
-    value: 138.75
+    value: 120
   maxStaminaRx:
-    value: 150
+    value: 120
   staminaCapRx:
     value: 150
   staminaJumpCostRx:
-    value: 10
+    value: 25
   staminaDashCostRx:
     value: 50
   staminaRechargeRx:

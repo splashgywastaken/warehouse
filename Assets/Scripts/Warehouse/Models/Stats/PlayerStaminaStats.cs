@@ -72,14 +72,26 @@ public class PlayerStaminaStats : ScriptableObject
     }
 #endif
 
-    public void SpendStamina(StaminaActions action)
+    /// <summary>
+    /// Changes stamina after action performed
+    /// </summary>
+    /// <param name="action">Action on which value is calculated</param>
+    /// <returns>If stamina decreased based on action</returns> 
+    /// <exception cref="ArgumentOutOfRangeException"> if provided action was not in this enum</exception>
+    public bool SpendStamina(StaminaActions action)
     {
-        Stamina -= action switch
+        var actionCost = action switch
         {
             StaminaActions.Jump => StaminaJumpCost,
             StaminaActions.Dash => StaminaDashCost,
             _ => throw new ArgumentOutOfRangeException(nameof(action), action, null)
         };
+        if (Stamina > actionCost)
+        {
+            Stamina -= actionCost;
+            return true;
+        }
+        return false;
     }
 
     public void IncreaseStaminaCap()

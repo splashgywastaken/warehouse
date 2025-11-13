@@ -2,7 +2,9 @@ using UnityEngine;
 using Warehouse.Character;
 using Warehouse.Character.PlayerSignals;
 using Warehouse.CharacterControllers;
+using Warehouse.CharacterControllers.States;
 using Warehouse.Input;
+using Warehouse.Models;
 using Zenject;
 
 namespace Warehouse.Injection
@@ -19,18 +21,48 @@ namespace Warehouse.Injection
         
         public override void InstallBindings()
         {
-            // Signals
             DeclarePlayerSignals();
-            
-            // Bindings
             InstallInputBindings();
+            InstallMovementStateMachine();
             InstallControllerBindings();
-            InstallPlayerStatsBindings();
             InstallMonoBehaviourBindings();
+            InstallPlayerStatsBindings();
+        }
+
+        private void InstallMovementStateMachine()
+        {
+            var fsmData = new MovementStateMachineData();
+
+            Container
+                .Bind<MovementStateMachineData>()
+                .FromInstance(fsmData)
+                .AsSingle();
+            
+            Container
+                .Bind<IMovementState>()
+                .To<IdleState>()
+                .AsSingle();
+            Container
+                .Bind<IMovementState>()
+                .To<WalkState>()
+                .AsSingle();
+            Container
+                .Bind<IMovementState>()
+                .To<DashState>()
+                .AsSingle();
+            Container
+                .Bind<IMovementState>()
+                .To<FallState>()
+                .AsSingle();
+            Container
+                .Bind<IMovementState>()
+                .To<JumpState>()
+                .AsSingle();
+            Container.Bind<MovementStateMachine>().AsSingle();
         }
 
         private void DeclarePlayerSignals()
-        { 
+        {
             SignalBusInstaller.Install(Container);
             Container.DeclareSignal<PlayerEnabledSignal>().OptionalSubscriber();
             Container.DeclareSignal<PlayerDisabledSignal>().OptionalSubscriber();
@@ -55,8 +87,7 @@ namespace Warehouse.Injection
             Container
                 .Bind<IStaminaController>()
                 .To<StaminaController>()
-                .AsTransient()
-                .WhenInjectedInto<PlayerKnightManager>();
+                .AsTransient();
             Container
                 .Bind<IMovementController>()
                 .To<MovementController>()
@@ -82,6 +113,10 @@ namespace Warehouse.Injection
                 .Bind<PlayerStaminaStats>()
                 .FromInstance(playerStaminaStats)
                 .AsSingle();
+
+            Container
+                .Bind<MovementContext>()
+                .AsSingle();
         }
 
         private void InstallMonoBehaviourBindings()
@@ -89,8 +124,7 @@ namespace Warehouse.Injection
             _characterController = gameObject.GetComponent<CharacterController>();
             Container.Bind<CharacterController>()
                 .FromInstance(_characterController)
-                .AsSingle()
-                .WhenInjectedInto<MovementController>();
+                .AsSingle();
         }
     }
 }

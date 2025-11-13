@@ -6,15 +6,6 @@ namespace Warehouse.Character
 {
     public interface IMovementController : ITickable, IFixedTickable
     {
-        /// <summary>
-        /// Carries amount of stamina wasted on dash
-        /// </summary>
-        public event Action<PlayerStaminaStats.StaminaActions> PlayerDashed;
-        /// <summary>
-        /// Carries amount of stamina wasted on jump
-        /// </summary>
-        public event Action<PlayerStaminaStats.StaminaActions> PlayerJumped;
-
         void StartJump();
         void StopJump();
         void OnCameraMoved(Vector3 pos);

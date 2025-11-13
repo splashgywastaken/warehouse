@@ -12,17 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d60cd68ddc664c48848e3326da409db, type: 3}
   m_Name: PlayerMovementStats
   m_EditorClassIdentifier: 
-  basePlayerSpeed: 4
-  basePlayerRotationSpeed: 10
-  basePlayerVelocity: {x: 0, y: 0, z: 0}
+  baseMoveSpeed: 6
+  baseRotationSpeed: 10
   baseMoveDir: {x: 0, y: 0, z: 0}
-  baseDashSpeed: 12
-  baseDashTime: 0.5
-  baseDashCooldown: 0.1
-  baseVerticalVelocityDashScale: 0.5
-  baseIsDashing: 0
-  baseCanDash: 1
-  baseIsInAir: 0
-  baseIsJumping: 0
-  baseJumpHeight: 5
-  baseGravityValue: -9.81

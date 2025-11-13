@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7367e1f4df9f81d4c87b4a7f0b851927, type: 3}
   m_Name: PlayerDashStats
   m_EditorClassIdentifier: 
-  baseDashSpeed: 12
+  baseDashSpeedMult: 2
   baseDashTime: 0.5
-  baseDashCooldown: 0.1
+  baseDashCooldown: 3
   baseVerticalVelocityDashScale: 0.5
   baseIsDashing: 0
   baseCanDash: 1

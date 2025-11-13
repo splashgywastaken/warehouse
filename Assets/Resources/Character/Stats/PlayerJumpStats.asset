@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseIsInAir: 0
   baseIsJumping: 0
-  baseJumpHeight: 2.5
+  baseJumpHeight: 0.2
   baseGravityValue: -9.81

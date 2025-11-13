@@ -26,7 +26,7 @@ namespace Warehouse.UI
             _viewModel.Stamina
                 .Subscribe(stamina => staminaText.text = $"Stamina: {(int)stamina}")
                 .AddTo(_disposables);
-
+            
             _viewModel.IncreaseMaxStaminaButtonEnabled
                 .Subscribe(buttonEnabled => increaseMaxStaminaButton.enabled = buttonEnabled)
                 .AddTo(_disposables);

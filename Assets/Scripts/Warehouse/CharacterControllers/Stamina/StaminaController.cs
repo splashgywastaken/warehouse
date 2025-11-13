@@ -13,8 +13,9 @@ namespace Warehouse.CharacterControllers
         // Stats 
         private readonly PlayerStaminaStats _staminaStats;
         // Hidden values
-        private bool _staminaRecharging;
-        private CancellationTokenSource _staminaRechargeCts;
+        private bool _recharging;
+        private CancellationTokenSource _rechargeCts;
+        private CancellationTokenSource _rechargeDelayCts;
         private CompositeDisposable _disposables;
         private readonly SignalBus _signalBus;
 
@@ -28,80 +29,95 @@ namespace Warehouse.CharacterControllers
         
         public void Initialize()
         {
-            _signalBus.Subscribe<PlayerEnabledSignal>(OnEnable);
-            _signalBus.Subscribe<PlayerDisabledSignal>(OnDisable);
+            _signalBus.Subscribe<PlayerEnabledSignal>(Enable);
+            _signalBus.Subscribe<PlayerDisabledSignal>(Disable);
+            Debug.Log($"Num subscribers{_signalBus.NumSubscribers}");
         }
 
-        public void OnEnable()
+        public void Enable()
         {
+            Debug.Log($"Enabled stamina controller");
             _disposables = new CompositeDisposable();
             _staminaStats.maxStaminaRx
                 .Where(currentMaxStamina => currentMaxStamina > _staminaStats.Stamina)
-                .Subscribe(_ => RechargeStamina())
-                .AddTo(_disposables);   
+                .Subscribe(_ => RestartRecharge())
+                .AddTo(_disposables);
         }
 
-        public void OnDisable()
+        public void Disable()
         {
             _disposables.Dispose();
         }
 
         public void Dispose()
         {
-            _signalBus.TryUnsubscribe<PlayerEnabledSignal>(OnEnable);
-            _signalBus.TryUnsubscribe<PlayerDisabledSignal>(OnDisable);
-            _staminaRechargeCts?.Cancel();
-            _staminaRechargeCts?.Dispose();
+            _signalBus.TryUnsubscribe<PlayerEnabledSignal>(Enable);
+            _signalBus.TryUnsubscribe<PlayerDisabledSignal>(Disable);
+            _rechargeCts?.Cancel();
+            _rechargeCts?.Dispose();
+            _rechargeDelayCts?.Cancel();
+            _rechargeDelayCts?.Dispose();
             _disposables.Dispose();
         }
         
-        public void ConsumeStamina(PlayerStaminaStats.StaminaActions action)
+        /// <summary>
+        /// Returns if stamina can be consumed on specified action
+        /// and if it can - runs stamina recharge task
+        /// </summary>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public bool ConsumeStamina(PlayerStaminaStats.StaminaActions action)
         {
-            _staminaStats.SpendStamina(action);
-            RechargeStamina();
+            if (!_staminaStats.SpendStamina(action))
+            {
+                return false;
+            }
+            RestartRecharge();
+            return true;
         }
 
-        private void RechargeStamina()
+        private void RestartRecharge()
         {
-            if (_staminaRecharging)
+            if (_recharging)
             {
                 // Debug.Log("<color=orange>[Stamina]</color> Таска уже идёт – отменяем текущую...");
-                _staminaRechargeCts?.Cancel();
-                _staminaRechargeCts?.Dispose();
-                _staminaRechargeCts = null;
+                _rechargeCts?.Cancel();
+                _rechargeCts?.Dispose();
+                _rechargeDelayCts?.Cancel();
+                _rechargeDelayCts?.Dispose();
             }
-            
-            UniTask.Void(async () =>
-            {
-                await UniTask.Yield(PlayerLoopTiming.FixedUpdate);
 
-                _staminaRechargeCts = new CancellationTokenSource();
-                // Debug.Log("<color=yellow>[Stamina]</color> Запускаем новую таску восстановления...");
-                RechargeStaminaAsync(_staminaRechargeCts.Token).Forget();
-            });
-            
-            _staminaRechargeCts = new CancellationTokenSource();
-            RechargeStaminaAsync(_staminaRechargeCts.Token).Forget();            
+            _rechargeCts = new CancellationTokenSource();
+            _rechargeDelayCts = new CancellationTokenSource();
+            RechargeStaminaAsync(_rechargeCts.Token, _rechargeDelayCts.Token).Forget();
         }
         
-        private async UniTask RechargeStaminaAsync(CancellationToken token)
+        private async UniTask RechargeStaminaAsync(CancellationToken rechargeToken, CancellationToken rechargeDelayToken)
         {
-            _staminaRecharging = true;
+            _recharging = true;
             
             try
             {
                 // Debug.Log("<color=white>[Stamina]</color> Ожидание перед восстановлением...");
                 // Wait until delay
-                await UniTask.Delay(TimeSpan.FromSeconds(_staminaStats.delayBeforeRecharge), cancellationToken: token);
-                // Debug.Log("<color=green>[Stamina]</color> Начинаем восстанавливать стамину...");
+                await UniTask.Delay(
+                    TimeSpan.FromSeconds(_staminaStats.delayBeforeRecharge), 
+                    cancellationToken: rechargeDelayToken
+                );
+                Debug.Log("<color=green>[Stamina]</color> Начинаем восстанавливать стамину...");
 
                 // Recharge stamina
-                while (!_staminaStats.RechargeStamina())
-                {
-                    // Debug.Log($"<color=cyan>[Stamina]</color> Текущее значение: {_staminaStats.Stamina}");
-                    await UniTask.Yield(PlayerLoopTiming.FixedUpdate, token);
-                }
-                
+                await UniTask
+                    .WaitUntil(
+                        () => _staminaStats.RechargeStamina(),
+                        PlayerLoopTiming.FixedUpdate,
+                        cancellationToken: rechargeToken
+                    )
+                    .ContinueWith(() =>
+                    {
+                        _recharging = false;
+                    });
+
                 // Debug.Log("<color=lime>[Stamina]</color> Стамина полностью восстановлена!");
             }
             catch (OperationCanceledException)
@@ -110,7 +126,10 @@ namespace Warehouse.CharacterControllers
             }
             finally
             {
-                _staminaRecharging = false;   
+                _rechargeCts?.Dispose();
+                _rechargeCts = null;
+                _rechargeDelayCts?.Dispose();
+                _rechargeDelayCts = null;
                 // Debug.Log("<color=white>[Stamina]</color> Процесс восстановления завершён.");
             }
         }

@@ -24,6 +24,12 @@ namespace Warehouse.Injection
                 .FromNew()
                 .AsSingle()
                 .WhenInjectedInto<StaminaValueBarView>();
+
+            Container
+                .Bind<StateMachineViewModel>()
+                .FromNew()
+                .AsSingle()
+                .WhenInjectedInto<StateMachineView>();
         }
     }   
 }

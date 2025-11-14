@@ -25,18 +25,16 @@ namespace Warehouse.CharacterControllers
             _staminaStats = staminaStats;
             _signalBus = signalBus;
             _disposables = new CompositeDisposable();
+            _signalBus.Subscribe<PlayerEnabledSignal>(Enable);
+            _signalBus.Subscribe<PlayerDisabledSignal>(Disable);
         }
         
         public void Initialize()
         {
-            _signalBus.Subscribe<PlayerEnabledSignal>(Enable);
-            _signalBus.Subscribe<PlayerDisabledSignal>(Disable);
-            Debug.Log($"Num subscribers{_signalBus.NumSubscribers}");
         }
 
         public void Enable()
         {
-            Debug.Log($"Enabled stamina controller");
             _disposables = new CompositeDisposable();
             _staminaStats.maxStaminaRx
                 .Where(currentMaxStamina => currentMaxStamina > _staminaStats.Stamina)
@@ -80,7 +78,6 @@ namespace Warehouse.CharacterControllers
         {
             if (_recharging)
             {
-                // Debug.Log("<color=orange>[Stamina]</color> Таска уже идёт – отменяем текущую...");
                 _rechargeCts?.Cancel();
                 _rechargeCts?.Dispose();
                 _rechargeDelayCts?.Cancel();
@@ -98,13 +95,11 @@ namespace Warehouse.CharacterControllers
             
             try
             {
-                // Debug.Log("<color=white>[Stamina]</color> Ожидание перед восстановлением...");
                 // Wait until delay
                 await UniTask.Delay(
                     TimeSpan.FromSeconds(_staminaStats.delayBeforeRecharge), 
                     cancellationToken: rechargeDelayToken
                 );
-                Debug.Log("<color=green>[Stamina]</color> Начинаем восстанавливать стамину...");
 
                 // Recharge stamina
                 await UniTask
@@ -118,11 +113,9 @@ namespace Warehouse.CharacterControllers
                         _recharging = false;
                     });
 
-                // Debug.Log("<color=lime>[Stamina]</color> Стамина полностью восстановлена!");
             }
             catch (OperationCanceledException)
             {
-                // Debug.Log("<color=red>[Stamina]</color> Таска отменена.");
             }
             finally
             {
@@ -130,7 +123,6 @@ namespace Warehouse.CharacterControllers
                 _rechargeCts = null;
                 _rechargeDelayCts?.Dispose();
                 _rechargeDelayCts = null;
-                // Debug.Log("<color=white>[Stamina]</color> Процесс восстановления завершён.");
             }
         }
     }

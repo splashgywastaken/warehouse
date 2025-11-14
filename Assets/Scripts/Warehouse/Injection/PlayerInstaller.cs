@@ -64,8 +64,8 @@ namespace Warehouse.Injection
         private void DeclarePlayerSignals()
         {
             SignalBusInstaller.Install(Container);
-            Container.DeclareSignal<PlayerEnabledSignal>().OptionalSubscriber();
-            Container.DeclareSignal<PlayerDisabledSignal>().OptionalSubscriber();
+            Container.DeclareSignal<PlayerEnabledSignal>().OptionalSubscriberWithWarning();
+            Container.DeclareSignal<PlayerDisabledSignal>().OptionalSubscriberWithWarning();
         }
         
         private void InstallInputBindings()
@@ -82,16 +82,16 @@ namespace Warehouse.Injection
             Container
                 .Bind<IAttackController>()
                 .To<AttackController>()
-                .AsTransient()
+                .AsSingle()
                 .WhenInjectedInto<PlayerKnightManager>();
             Container
                 .Bind<IStaminaController>()
                 .To<StaminaController>()
-                .AsTransient();
+                .AsSingle();
             Container
                 .Bind<IMovementController>()
                 .To<MovementController>()
-                .AsTransient()
+                .AsSingle()
                 .WhenInjectedInto<PlayerKnightManager>();
         }
 

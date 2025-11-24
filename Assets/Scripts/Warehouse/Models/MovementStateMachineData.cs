@@ -1,4 +1,5 @@
 using UniRx;
+using UnityEngine;
 
 namespace Warehouse.Models
 {
@@ -13,7 +14,8 @@ namespace Warehouse.Models
         None
     }
     
-    public class MovementStateMachineData
+    [CreateAssetMenu(menuName = "Warehouse/FSM data/Movement state machine data", fileName = "NewMovementStateMachineData")]
+    public class MovementStateMachineData : ScriptableObject
     {
         public ReactiveProperty<MovementStateType> CurrentStateRx { get; set; } = new(MovementStateType.Idle);
         public ReactiveProperty<MovementStateType> PreviousStateRx { get; set; } = new(MovementStateType.None);

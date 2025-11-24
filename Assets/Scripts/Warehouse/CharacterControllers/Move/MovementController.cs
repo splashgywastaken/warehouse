@@ -58,9 +58,9 @@ namespace Warehouse.Character
         public void Move(Vector2 input)
         {
             UpdateMoveDir(input);
-            if (_fsm.FSMData.CurrentStateType != MovementStateType.Dashing && 
-                _fsm.FSMData.CurrentStateType != MovementStateType.Jumping &&
-                _fsm.FSMData.CurrentStateType != MovementStateType.Falling)
+            if (_fsm.FsmData.CurrentStateType != MovementStateType.Dashing && 
+                _fsm.FsmData.CurrentStateType != MovementStateType.Jumping &&
+                _fsm.FsmData.CurrentStateType != MovementStateType.Falling)
             {
                 _fsm.ChangeState(MovementStateType.Walking);
             }

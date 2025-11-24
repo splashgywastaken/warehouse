@@ -7,6 +7,7 @@ using UnityEngine.Serialization;
 using Warehouse.Character.PlayerSignals;
 using Warehouse.CharacterControllers;
 using Warehouse.Services.Camera;
+using Warehouse.Services.Warehouse.Services;
 using Zenject;
 
 namespace Warehouse.Character
@@ -29,20 +30,21 @@ namespace Warehouse.Character
         // Input
         [Inject]
         private IInputReader _inputReader;
-        // Notifiers
         [Inject]
-        private ICameraNotifier _cameraMoveNotifier;
+        private PersistenceManager _persistenceManager;
         // Signals
         [Inject]
         private SignalBus _signalBus;
         
         // Private fields
+        // Notifiers
+        private ICameraNotifier _cameraMoveNotifier;
         // Misc
         private CancellationTokenSource _cts;
         
         private void Awake()
         {
-            _cameraMoveNotifier = FindAnyObjectByType<CinemachineCameraMoveNotifier>();
+            _cameraMoveNotifier = _persistenceManager.Get<CinemachineCameraMoveNotifier>(); 
             _cts = new CancellationTokenSource();
         }
 

@@ -15,12 +15,12 @@ namespace Warehouse.CharacterControllers
         private IMovementState _currentState;
 
         public event Action<MovementStateType> OnStateChanged;
-        public readonly MovementStateMachineData FSMData;
+        public readonly MovementStateMachineData FsmData;
 
         [Inject]
         public MovementStateMachine(IEnumerable<IMovementState> states, MovementStateMachineData fsmData)
         {
-            FSMData = fsmData;
+            FsmData = fsmData;
             _states = states.ToDictionary(s => s.StateType());
             foreach (var state in _states.Values)
             {
@@ -44,8 +44,8 @@ namespace Warehouse.CharacterControllers
                 //     break;
                 // Else set current as previous and current as new state
                 default:
-                    FSMData.PreviousStateType = FSMData.CurrentStateType;
-                    FSMData.CurrentStateType = newState;
+                    FsmData.PreviousStateType = FsmData.CurrentStateType;
+                    FsmData.CurrentStateType = newState;
                     break;
             }
             _currentState?.Exit();

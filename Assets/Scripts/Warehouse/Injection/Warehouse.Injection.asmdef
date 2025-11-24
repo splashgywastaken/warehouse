@@ -5,9 +5,9 @@
         "Warehouse.Character",
         "Zenject",
         "Warehouse.Input",
-        "Warehouse.Models.Stats",
         "Warehouse.UI",
-        "Warehouse.Services"
+        "Warehouse.Services",
+        "Warehouse.Models"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

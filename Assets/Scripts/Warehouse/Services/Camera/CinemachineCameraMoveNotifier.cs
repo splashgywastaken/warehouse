@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Unity.Cinemachine;
+using Warehouse.Services.Warehouse.Services;
 
 namespace Warehouse.Services.Camera
 {
@@ -29,7 +30,7 @@ namespace Warehouse.Services.Camera
         private Quaternion _prevRotation;
         private bool _isMoving;
         private float _lastMoveTime;
-
+        
         private void Awake()
         {
             _brain = FindAnyObjectByType<CinemachineBrain>();

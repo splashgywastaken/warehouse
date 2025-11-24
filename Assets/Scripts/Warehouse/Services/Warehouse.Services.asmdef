@@ -3,7 +3,11 @@
     "rootNamespace": "Warehouse.Services",
     "references": [
         "GUID:be8fe1bc5e359d54295e51ca52ce8a73",
-        "GUID:4307f53044263cf4b835bd812fc161a4"
+        "GUID:4307f53044263cf4b835bd812fc161a4",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:029c1c1b674aaae47a6841a0b89ad80e",
+        "GUID:0d8beb7f090555447a6cf5ce9e54dbb4",
+        "GUID:2c3f910e4ad1b0042927f6cefe28131b"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
